@@ -36,13 +36,21 @@ def build_vggsfm_tracker(model_path=None):
     Returns:
         Initialized tracker model in eval mode.
     """
+    import os
+    
     tracker = TrackerPredictor()
 
-    if model_path is None:
+    if model_path is not None and os.path.exists(model_path):
+        print(f"Loading VGGSfM tracker from local path: {model_path}")
+        tracker.load_state_dict(torch.load(model_path, map_location="cpu"))
+    elif model_path is not None and not os.path.exists(model_path):
+        print(f"Warning: VGGSfM model path {model_path} provided but file not found. Downloading from HuggingFace...")
         default_url = "https://huggingface.co/facebook/VGGSfM/resolve/main/vggsfm_v2_tracker.pt"
         tracker.load_state_dict(torch.hub.load_state_dict_from_url(default_url))
     else:
-        tracker.load_state_dict(torch.load(model_path))
+        print("Downloading VGGSfM tracker from HuggingFace...")
+        default_url = "https://huggingface.co/facebook/VGGSfM/resolve/main/vggsfm_v2_tracker.pt"
+        tracker.load_state_dict(torch.hub.load_state_dict_from_url(default_url))
 
     tracker.eval()
     return tracker
