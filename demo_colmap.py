@@ -45,7 +45,7 @@ def parse_args():
     
     # --- 新增/修改的参数 start ---
     parser.add_argument("--output_dir", type=str, default=None, help="Directory to save the reconstruction results. If None, saves to scene_dir (will fail on Kaggle input).")
-    parser.add_argument("--model_path", type=str, default="/kaggle/input/vggt-input-laojun/model.pt", help="Path to the local model weights file")
+    parser.add_argument("--vggt_model_path", type=str, default="/kaggle/input/vggt-input-laojun/model.pt", help="Path to the local model weights file")
     # --- 新增/修改的参数 end ---
 
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
@@ -118,12 +118,12 @@ def demo_fn(args):
     # Run VGGT for camera and depth estimation
     model = VGGT()
     
-    # --- 修改部分：优先从本地 args.model_path 加载模型 ---
+    # --- 修改部分：优先从本地 args.vggt_model_path 加载模型 ---
     model_loaded = False
-    if hasattr(args, 'model_path') and args.model_path and os.path.exists(args.model_path):
+    if hasattr(args, 'vggt_model_path') and args.vggt_model_path and os.path.exists(args.vggt_model_path):
         try:
             # 处理路径可能是目录也可能是文件的情况
-            load_path = args.model_path
+            load_path = args.vggt_model_path
             if os.path.isdir(load_path):
                 # 如果是目录，尝试寻找 .pt 文件
                 pt_files = glob.glob(os.path.join(load_path, "*.pt"))
@@ -137,7 +137,7 @@ def demo_fn(args):
                 model.load_state_dict(state_dict)
                 model_loaded = True
             else:
-                print(f"Warning: Model path {args.model_path} provided but file not found.")
+                print(f"Warning: Model path {args.vggt_model_path} provided but file not found.")
         except Exception as e:
             print(f"Error loading local model: {e}. Fallback to URL.")
 
@@ -368,7 +368,7 @@ class Args:
     # 必须修改的路径
     scene_dir = "/kaggle/input/your-dataset/scene_name"       # 输入图片路径 (只读)
     output_dir = "/kaggle/working/output_scene_name"          # 输出结果路径 (可写)
-    model_path = "/kaggle/input/vggt-input-laojun/model.pt"   # 你的本地模型路径
+    vggt_model_path = "/kaggle/model.pt"   # 你的本地模型路径
     
     # 可选参数 (保持默认即可)
     seed = 42
