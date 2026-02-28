@@ -20,6 +20,7 @@ def predict_tracks(
     max_points_num=163840,
     fine_tracking=True,
     complete_non_vis=True,
+    vggsfm_model_path=None,
 ):
     """
     Predict tracks for the given images and masks.
@@ -42,6 +43,7 @@ def predict_tracks(
         max_points_num: Maximum number of points to process at once. Default is 163840.
         fine_tracking: Whether to use fine tracking. Default is True.
         complete_non_vis: Whether to augment non-visible frames. Default is True.
+        vggsfm_model_path: Path to the VGGSfM tracker model weights. If None, downloads from HuggingFace. Default is None.
 
     Returns:
         pred_tracks: Numpy array containing the predicted tracks.
@@ -53,7 +55,7 @@ def predict_tracks(
 
     device = images.device
     dtype = images.dtype
-    tracker = build_vggsfm_tracker().to(device, dtype)
+    tracker = build_vggsfm_tracker(model_path=vggsfm_model_path).to(device, dtype)
 
     # Find query frames
     query_frame_indexes = generate_rank_by_dino(images, query_frame_num=query_frame_num, device=device)

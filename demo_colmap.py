@@ -45,7 +45,8 @@ def parse_args():
     
     # --- 新增/修改的参数 start ---
     parser.add_argument("--output_dir", type=str, default=None, help="Directory to save the reconstruction results. If None, saves to scene_dir (will fail on Kaggle input).")
-    parser.add_argument("--vggt_model_path", type=str, default="/kaggle/input/vggt-input-laojun/model.pt", help="Path to the local model weights file")
+    parser.add_argument("--vggt_model_path", type=str, default=None, help="Path to the local VGGT model weights file")
+    parser.add_argument("--vggsfm_model_path", type=str, default=None, help="Path to the local VGGSfM tracker model weights file")
     # --- 新增/修改的参数 end ---
 
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
@@ -206,6 +207,7 @@ def demo_fn(args):
                 query_frame_num=args.query_frame_num,
                 keypoint_extractor="aliked+sp",
                 fine_tracking=args.fine_tracking,
+                vggsfm_model_path=args.vggsfm_model_path,
             )
 
             torch.cuda.empty_cache()
@@ -368,7 +370,8 @@ class Args:
     # 必须修改的路径
     scene_dir = "/kaggle/input/your-dataset/scene_name"       # 输入图片路径 (只读)
     output_dir = "/kaggle/working/output_scene_name"          # 输出结果路径 (可写)
-    vggt_model_path = "/kaggle/model.pt"   # 你的本地模型路径
+    vggt_model_path = "model.pt"               # VGGT 主模型路径
+    vggsfm_model_path = "vggsfm_v2_tracker.pt" # VGGSfM tracker 模型路径 (use_ba=True时需要)
     
     # 可选参数 (保持默认即可)
     seed = 42
